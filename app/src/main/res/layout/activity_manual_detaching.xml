@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/attached_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:layout_marginVertical="16dp"
+        android:text="Is attached"
+        />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/added_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:layout_marginVertical="16dp"
+        android:text="Is added"
+        />
+
+    <com.example.myapplication.AllowsDetaching
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#F1F1F1"
+        android:layout_weight="1"
+        >
+
+        <FrameLayout
+            android:id="@+id/red_view"
+            android:background="#ff8484"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <FrameLayout
+                android:id="@+id/green_view"
+                android:layout_width="match_parent"
+                android:layout_margin="24dp"
+                android:background="#e5f4d5"
+                android:layout_height="match_parent"
+                >
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/white_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FFF"
+                    android:layout_marginHorizontal="16dp"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginVertical="16dp"
+                    android:text="Test switch"
+                    />
+            </FrameLayout>
+        </FrameLayout>
+    </com.example.myapplication.AllowsDetaching>
+
+    <TextView
+        android:id="@+id/status"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+</LinearLayout>

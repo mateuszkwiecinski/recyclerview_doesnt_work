@@ -3,109 +3,74 @@ package com.example.myapplication
 import android.content.Context
 import android.os.Bundle
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.delay
 
 internal class MainActivity : AppCompatActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edittext)
-        val pager = findViewById<ViewPager2>(R.id.pager)
-        pager.adapter = object : FragmentStateAdapter(this) {
-            override fun getItemCount() = 2
+        setContentView(R.layout.activity_manual_detaching)
 
-            override fun createFragment(position: Int) =
-                if (position == 2) {
-                    RecyclerviewFragment()
-                } else {
-                    RefreshableFragment()
-                }
+        val container = findViewById<AllowsDetaching>(R.id.container)
 
-        }
-        val tabs = findViewById<TabLayout>(R.id.tabs)
-        TabLayoutMediator(tabs, pager) { tab, position ->
-            tab.text = "Tab $position"
-        }.attach()
-        findViewById<RecyclerView>(R.id.recycler).setup(this)
-    }
-}
+        val redView = findViewById<View>(R.id.red_view)
+        val greenView = findViewById<View>(R.id.green_view)
+        val whiteView = findViewById<View>(R.id.white_view)
+        val button = findViewById<MaterialButton>(R.id.button)
+        val isAttachedSwitch = findViewById<SwitchMaterial>(R.id.attached_switch)
+        val isAddedSwitch = findViewById<SwitchMaterial>(R.id.added_switch)
+        val statusText = findViewById<TextView>(R.id.status)
 
-class RefreshableFragment : Fragment(R.layout.fragment_with_switch)
-
-class RecyclerviewFragment : Fragment(R.layout.fragment_recyclerview) {
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        view.findViewById<RecyclerView>(R.id.recycler).setup(requireContext())
-
-    }
-}
-
-fun RecyclerView.setup(context: Context) {
-    layoutManager = LinearLayoutManager(context)
-    adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
-        ) = object : RecyclerView.ViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(viewType, parent, false)
-        ) {
-
-        }
-
-        override fun getItemViewType(position: Int): Int {
-            return if (position % 20 == 0) {
-                R.layout.item_with_switch
+        isAttachedSwitch.isChecked = true
+        isAttachedSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                container.attachViewToParent(redView, 0, redView.layoutParams)
             } else {
-                R.layout.item_with_text
+                container.detachViewFromParent(redView)
             }
         }
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            val label = when (holder.itemViewType) {
-                R.layout.item_with_switch -> holder.itemView.findViewById<SwitchMaterial>(R.id.item_switch)
-                R.layout.item_with_text -> holder.itemView.findViewById<TextView>(R.id.item_text)
-                else -> error("unsupported")
+        isAddedSwitch.isChecked = true
+        isAddedSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                container.addView(redView)
+            } else {
+                container.removeView(redView)
             }
-
-            label.text = "Item $position"
         }
 
-        override fun getItemCount(): Int = 100
+        button.text = "greenView.requestLayout()"
+        button.setOnClickListener { greenView.requestLayout() }
 
+        lifecycleScope.launchWhenResumed {
+            while (true) {
+                statusText.text = """
+                    red.isLaidOut = ${redView.isLaidOut}, isAttachedToWindow = ${redView.isAttachedToWindow}
+                    green.isLaidOut = ${greenView.isLaidOut}, isAttachedToWindow = ${greenView.isAttachedToWindow}
+                    switch.isLaidOut = ${whiteView.isLaidOut}, isAttachedToWindow = ${whiteView.isAttachedToWindow}
+                """.trimIndent()
+                delay(200)
+            }
+        }
     }
 }
 
-class SwiMatChTerial(context: Context, attrs: AttributeSet?) : SwitchMaterial(context, attrs) {
+class AllowsDetaching(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs) {
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
+
+    public override fun attachViewToParent(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
+        super.attachViewToParent(child, index, params)
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-    }
-
-    override fun setChecked(checked: Boolean) {
-        super.setChecked(checked)
-    }
-
-    override fun requestLayout() {
-        super.requestLayout()
+    public override fun detachViewFromParent(child: View?) {
+        super.detachViewFromParent(child)
     }
 }
